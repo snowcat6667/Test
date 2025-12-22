@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>許願池輸入介面</title>
+</head>
+<body>
+    <h2>輸入你的願望 (以換行分隔)</h2>
+    <textarea id="wishInput" rows="10" cols="30" placeholder="第一行願望&#10;第二行願望..."></textarea>
+    <br><br>
+    <button onclick="sendWishes()">確定發送</button>
+
+    <script>
+        // 替換成你的 Firebase 網址，記得後面加上 "wishes.json"
+        const firebaseUrl = "https://wishingpool-36636-default-rtdb.asia-southeast1.firebasedatabase.app//wishes.json";
+
+        function sendWishes() {
+            const text = document.getElementById("wishInput").value;
+            // 將文字依換行切分成陣列，並過濾空行
+            const wishList = text.split('\n').filter(item => item.trim() !== "");
+
+            // 構建要傳送的資料物件
+            const data = {
+                items: wishList,
+                timestamp: Date.now() // 加入時間戳記確保資料變動
+            };
+
+            // 使用 Fetch API 發送 PUT 請求 (PUT 會覆蓋舊資料)
+            fetch(firebaseUrl, {
+                method: 'PUT', 
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' }
+            }).then(response => {
+                if(response.ok) {
+                    alert("願望已傳送成功！");
+                } else {
+                    alert("傳送失敗");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
