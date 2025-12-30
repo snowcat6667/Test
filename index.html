@@ -8,21 +8,14 @@
         body {
             font-family: "Microsoft JhengHei", Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0; /* 改為 0，避免卷軸出現 */
             background-color: #f9f9f9;
             
-            /* --- Flexbox 設定 --- */
+            /* --- Flexbox 佈局設定 --- */
             display: flex;
-            
-            /* 修改 1: 改為垂直排列，這樣版本資訊才會跑到最下面 */
-            flex-direction: column; 
-            
-            /* 讓內容垂直水平置中 */
-            justify-content: center;
-            align-items: center;
-            
-            /* 設定最小高度為視窗高度，確保內容少時也能置中 */
-            min-height: 100vh; 
+            flex-direction: column; /* 垂直排列 */
+            min-height: 100vh;      /* 強制至少跟螢幕一樣高 */
+            /* 這裡移除了 justify-content: center，改用 container 的 margin 來控制 */
         }
 
         /* 主要容器樣式 */
@@ -34,8 +27,9 @@
             flex-direction: column;
             align-items: center;
             
-            /* 為了避免跟下方版本資訊太擠，稍微推開一點 */
-            margin-bottom: 20px; 
+            /* --- 關鍵修改：讓容器自動分配剩餘空間 --- */
+            /*這會讓它自動在垂直方向上置中，把上面和下面的空間平均分配 */
+            margin: auto; 
         }
 
         /* 頂部說明圖片 */
@@ -70,12 +64,15 @@
             transform: scale(0.95);
         }
 
-        /* --- 修改 2: 新增版本資訊樣式 --- */
+        /* 版本資訊樣式 */
         .version-info {
-            font-size: 12px;       /* 字體小一點 */
-            color: #888888;        /* 灰色字體，不要太搶眼 */
-            margin-top: auto;      /* 這行會試著把它推到容器最底部 (視情況) */
-            padding-top: 20px;     /* 上方留白 */
+            font-size: 12px;
+            color: #888888;
+            text-align: center;
+            
+            /* 讓它固定在底部稍微留點空間 */
+            padding-bottom: 15px; 
+            width: 100%;
         }
 
     </style>
@@ -89,11 +86,10 @@
     </div>
 
     <div class="version-info">
-        Server Ver 1.0.2 &nbsp;|&nbsp; Client Ver 1.1.0
+         Version 1.0.3
     </div>
 
     <script>
-        // Firebase 網址 (配合方法二：新增模式)
         const firebaseUrl = "https://wishingpool-36636-default-rtdb.asia-southeast1.firebasedatabase.app/wishes.json";
 
         function sendWishes() {
@@ -105,7 +101,6 @@
                 return;
             }
 
-            // 使用 POST 格式 (content + timestamp)
             const data = {
                 content: text, 
                 timestamp: Date.now()
@@ -115,7 +110,6 @@
             btn.style.opacity = "0.5";
             btn.style.pointerEvents = "none";
 
-            // 使用 POST 方法
             fetch(firebaseUrl, {
                 method: 'POST', 
                 body: JSON.stringify(data),
