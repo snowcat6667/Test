@@ -29,7 +29,7 @@
 
         /* 頂部說明圖片樣式 */
         .header-img {
-            max-width: 100%; /* 手機版自動縮放 */
+            max-width: 60%; /* 手機版自動縮放 */
             height: auto;
             margin-bottom: 10px; /* 距離輸入框 10px */
             display: block;
@@ -41,9 +41,10 @@
             padding: 10px;
             font-size: 16px;
             
-            /* 您的指定樣式 */
-            border: 5px solid gray;
-            background-color: #e6e6e6; /* 淡灰色 */
+            /* --- 修改處：邊框改為黑色 --- */
+            border: 5px solid black; 
+            
+            background-color: #e6e6e6; /* 淡灰色填充 */
             outline: none; /* 移除點擊時的藍色光暈 */
             border-radius: 10px; /* 圓角看起來比較柔和 (可選) */
         }
@@ -73,7 +74,7 @@
     </div>
 
     <script>
-        // 您的 Firebase 網址 (修正了中間多餘的斜線)
+        // 您的 Firebase 網址
         const firebaseUrl = "https://wishingpool-36636-default-rtdb.asia-southeast1.firebasedatabase.app/wishes.json";
 
         function sendWishes() {
@@ -87,13 +88,12 @@
             }
 
             // 構建資料物件
-            // 為了相容原本的資料結構，這裡依然使用 items 陣列，但只放一個願望
             const data = {
                 items: [text], 
                 timestamp: Date.now()
             };
 
-            // 鎖定按鈕避免重複發送 (非必要但建議)
+            // 鎖定按鈕避免重複發送
             const btn = document.querySelector('.send-btn-img');
             btn.style.opacity = "0.5";
             btn.style.pointerEvents = "none";
@@ -121,6 +121,3 @@
     </script> 
 </body> 
 </html>
-
-
-
