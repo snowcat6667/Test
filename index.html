@@ -10,12 +10,22 @@
             margin: 0;
             padding: 20px;
             background-color: #f9f9f9;
+            
+            /* --- Flexbox 設定 --- */
             display: flex;
+            
+            /* 修改 1: 改為垂直排列，這樣版本資訊才會跑到最下面 */
+            flex-direction: column; 
+            
+            /* 讓內容垂直水平置中 */
             justify-content: center;
             align-items: center;
-            min-height: 90vh; 
+            
+            /* 設定最小高度為視窗高度，確保內容少時也能置中 */
+            min-height: 100vh; 
         }
 
+        /* 主要容器樣式 */
         .container {
             width: 100%;
             max-width: 500px;
@@ -23,8 +33,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            
+            /* 為了避免跟下方版本資訊太擠，稍微推開一點 */
+            margin-bottom: 20px; 
         }
 
+        /* 頂部說明圖片 */
         .header-img {
             max-width: 60%;
             height: auto;
@@ -32,6 +46,7 @@
             display: block;
         }
 
+        /* 輸入框 */
         #wishInput {
             width: 80%;
             padding: 10px;
@@ -43,6 +58,7 @@
             margin-bottom: 50px; 
         }
 
+        /* 按鈕圖片 */
         .send-btn-img {
             margin-top: 20px;
             cursor: pointer;
@@ -53,6 +69,15 @@
         .send-btn-img:active {
             transform: scale(0.95);
         }
+
+        /* --- 修改 2: 新增版本資訊樣式 --- */
+        .version-info {
+            font-size: 12px;       /* 字體小一點 */
+            color: #888888;        /* 灰色字體，不要太搶眼 */
+            margin-top: auto;      /* 這行會試著把它推到容器最底部 (視情況) */
+            padding-top: 20px;     /* 上方留白 */
+        }
+
     </style>
 </head>
 <body>
@@ -63,8 +88,12 @@
         <img src="images/button_submit.png" alt="發送" class="send-btn-img" onclick="sendWishes()">
     </div>
 
+    <div class="version-info">
+        Server Ver 1.0.2 &nbsp;|&nbsp; Client Ver 1.1.0
+    </div>
+
     <script>
-        // Firebase 網址 (不用改，還是指向 wishes.json)
+        // Firebase 網址 (配合方法二：新增模式)
         const firebaseUrl = "https://wishingpool-36636-default-rtdb.asia-southeast1.firebasedatabase.app/wishes.json";
 
         function sendWishes() {
@@ -76,9 +105,7 @@
                 return;
             }
 
-            // --- 修改點 1: 資料結構簡化 ---
-            // 我們不再傳送 items 陣列，而是只傳送「單一條」願望物件
-            // 這樣 Firebase 會自動幫這條願望產生一個亂數 ID (例如 -Ny123abc...)
+            // 使用 POST 格式 (content + timestamp)
             const data = {
                 content: text, 
                 timestamp: Date.now()
@@ -88,8 +115,7 @@
             btn.style.opacity = "0.5";
             btn.style.pointerEvents = "none";
 
-            // --- 修改點 2: 方法改為 POST ---
-            // POST = 新增一筆資料 (Append)，不會覆蓋舊的
+            // 使用 POST 方法
             fetch(firebaseUrl, {
                 method: 'POST', 
                 body: JSON.stringify(data),
