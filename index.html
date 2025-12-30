@@ -2,30 +2,103 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>許願池輸入介面</title>
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            /* 讓整個頁面內容垂直水平置中 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 90vh; 
+        }
+
+        /* 主要容器樣式 */
+        .container {
+            width: 100%;
+            max-width: 500px; /* 電腦版最大寬度 */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 頂部說明圖片樣式 */
+        .header-img {
+            max-width: 100%; /* 手機版自動縮放 */
+            height: auto;
+            margin-bottom: 10px; /* 距離輸入框 10px */
+            display: block;
+        }
+
+        /* 輸入框樣式 */
+        #wishInput {
+            width: 80%; /* 手機版寬度佔 80% */
+            padding: 10px;
+            font-size: 16px;
+            
+            /* 您的指定樣式 */
+            border: 5px solid gray;
+            background-color: #e0e0e0; /* 淡灰色 */
+            outline: none; /* 移除點擊時的藍色光暈 */
+            border-radius: 10px; /* 圓角看起來比較柔和 (可選) */
+        }
+
+        /* 圖片按鈕樣式 */
+        .send-btn-img {
+            margin-top: 20px;
+            cursor: pointer; /* 滑鼠移過去變手指 */
+            max-width: 150px; /* 按鈕圖片最大寬度 */
+            transition: transform 0.1s;
+        }
+
+        .send-btn-img:active {
+            transform: scale(0.95); /* 按下去時有縮小效果 */
+        }
+
+    </style>
 </head>
 <body>
-    <h2>輸入你的願望 (以換行分隔)</h2>
-    <textarea id="wishInput" rows="10" cols="30" placeholder="第一行願望&#10;第二行願望..."></textarea>
-    <br><br>
-    <button onclick="sendWishes()">確定發送</button>
+
+    <div class="container">
+        <img src="https://placehold.co/400x100/orange/white?text=說明文字圖片" alt="說明圖片" class="header-img">
+
+        <input type="text" id="wishInput" placeholder="請輸入您的願望...">
+
+        <img src="https://placehold.co/150x50/green/white?text=發送按鈕" alt="發送" class="send-btn-img" onclick="sendWishes()">
+    </div>
 
     <script>
-        // 替換成你的 Firebase 網址，記得後面加上 "wishes.json"
-        const firebaseUrl = "https://wishingpool-36636-default-rtdb.asia-southeast1.firebasedatabase.app//wishes.json";
+        // 您的 Firebase 網址 (修正了中間多餘的斜線)
+        const firebaseUrl = "https://wishingpool-36636-default-rtdb.asia-southeast1.firebasedatabase.app/wishes.json";
 
         function sendWishes() {
-            const text = document.getElementById("wishInput").value;
-            // 將文字依換行切分成陣列，並過濾空行
-            const wishList = text.split('\n').filter(item => item.trim() !== "");
+            const inputElement = document.getElementById("wishInput");
+            const text = inputElement.value.trim();
 
-            // 構建要傳送的資料物件
+            // 檢查是否為空
+            if (text === "") {
+                alert("請先輸入願望喔！");
+                return;
+            }
+
+            // 構建資料物件
+            // 為了相容原本的資料結構，這裡依然使用 items 陣列，但只放一個願望
             const data = {
-                items: wishList,
-                timestamp: Date.now() // 加入時間戳記確保資料變動
+                items: [text], 
+                timestamp: Date.now()
             };
 
-            // 使用 Fetch API 發送 PUT 請求 (PUT 會覆蓋舊資料)
+            // 鎖定按鈕避免重複發送 (非必要但建議)
+            const btn = document.querySelector('.send-btn-img');
+            btn.style.opacity = "0.5";
+            btn.style.pointerEvents = "none";
+
+            // 使用 Fetch API 發送 PUT 請求
             fetch(firebaseUrl, {
                 method: 'PUT', 
                 body: JSON.stringify(data),
@@ -33,11 +106,18 @@
             }).then(response => {
                 if(response.ok) {
                     alert("願望已傳送成功！");
+                    inputElement.value = ""; // 清空輸入框
                 } else {
                     alert("傳送失敗");
                 }
+            }).catch(error => {
+                alert("發生錯誤：" + error);
+            }).finally(() => {
+                // 恢復按鈕狀態
+                btn.style.opacity = "1";
+                btn.style.pointerEvents = "auto";
             });
         }
-    </script>
-</body>
+    </script> 
+</body> 
 </html>
